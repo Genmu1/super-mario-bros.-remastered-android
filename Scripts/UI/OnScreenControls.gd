@@ -52,15 +52,15 @@ func _input(event: InputEvent) -> void:
 func _process(_delta : float) -> void:
     var connected := detect_real_joysticks()
     if connected.size() > 0 || keyboard_detected || !should_show:
-		hide()
-		# this whole 5s interval debugging should prolly be removed eventually, if there are no further reports of missing touch controls coming in. 
-		if counter == 300:
-			print("connected: ", connected)
-			print("connected/size(): ", connected.size())
-			print("connected/should_show: ", should_show)
-	else:
-		show()
-	counter = counter - 1 if counter > 0 else 300
+        hide()
+        # this whole 5s interval debugging should prolly be removed eventually
+        if counter == 300:
+            print("connected: ", connected)
+            print("connected/size(): ", connected.size())
+            print("connected/should_show: ", should_show)
+    else:
+        show()
+    counter = counter - 1 if counter > 0 else 300
 
 func vibrate_asynchronously() -> void:
 	if vibration_thread != null:
