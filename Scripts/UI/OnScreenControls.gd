@@ -40,13 +40,18 @@ const BLACKLIST := ["uinput"]
 var run_lock_on := false
 var vibration_thread: Thread
 var should_show: bool
+var keyboard_detected := false
 
 # debug cooldown of 5 seconds at 60 fps, 2,5 seconds at 120 fps
 var counter := 300
 
+func _input(event: InputEvent) -> void:
+    if event is InputEventKey and event.pressed and !event.echo:
+        keyboard_detected = true
+
 func _process(_delta : float) -> void:
 	var connected := detect_real_joysticks()
-	if connected.size() > 0 || !should_show:
+	if connected.size() > 0 || keyboard_detected || !should_show:
 		hide()
 		# this whole 5s interval debugging should prolly be removed eventually, if there are no further reports of missing touch controls coming in. 
 		if counter == 300:
