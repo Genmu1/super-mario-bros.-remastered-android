@@ -1,0 +1,47 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Download Godot 4.5 beta 3
+        run: |
+          wget https://github.com/godotengine/godot-builds/releases/download/4.5-beta3/Godot_v4.5-beta3_linux.x86_64.zip
+          unzip Godot_v4.5-beta3_linux.x86_64.zip
+          chmod +x Godot_v4.5-beta3_linux.x86_64
+
+      - name: Download Godot export templates
+        run: |
+          wget https://github.com/godotengine/godot-builds/releases/download/4.5-beta3/Godot_v4.5-beta3_export_templates.tpz
+          mkdir -p ~/.local/share/godot/export_templates/4.5.beta3
+          unzip Godot_v4.5-beta3_export_templates.tpz
+          cp templates/android_debug.apk ~/.local/share/godot/export_templates/4.5.beta3/
+          cp templates/android_release.apk ~/.local/share/godot/export_templates/4.5.beta3/
+          cp templates/android_source.zip ~/.local/share/godot/export_templates/4.5.beta3/
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build APK
+        run: |
+          mkdir -p build
+          ./Godot_v4.5-beta3_linux.x86_64 --headless --export-debug "Android" build/smb1r-keyboard.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: smb1r-keyboard-apk
+          path: build/*.apk
